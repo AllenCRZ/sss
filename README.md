@@ -1,754 +1,470 @@
-# sss
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任务完成情况统计</title>
+    <title>给最爱的老婆</title>
     <style>
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             color: #333;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
         
         h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-        
-        .task-info {
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        
-        .task-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
             color: #e74c3c;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
         }
         
-        .task-description {
-            color: #7f8c8d;
-            margin-bottom: 15px;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-between;
+        .date-info {
             margin-bottom: 20px;
-        }
-        
-        .stat-box {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            text-align: center;
-            flex: 1;
-            margin: 0 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .stat-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .stat-box.completed {
-            background-color: #2ecc71;
-        }
-        
-        .stat-box.pending {
-            background-color: #e74c3c;
-        }
-        
-        .member-list {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .member-list h2 {
-            color: #2c3e50;
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .members {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .member {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid #ddd;
-        }
-        
-        .member:hover {
-            background-color: #e9ecef;
-            transform: translateY(-2px);
-        }
-        
-        .member.completed {
-            background-color: #d4edda;
-            color: #155724;
-            border-color: #c3e6cb;
-            text-decoration: line-through;
-            opacity: 0.6;
-        }
-        
-        .search-box {
-            margin-bottom: 15px;
-        }
-        
-        #search-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-        
-        .no-members {
-            text-align: center;
-            color: #7f8c8d;
-            padding: 20px;
-        }
-        
-        .reset-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .reset-btn:hover {
-            background-color: #e9ecef;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        .modal-title {
             font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-        
-        .modal-close {
-            float: right;
-            cursor: pointer;
-            font-size: 1.5rem;
-            line-height: 1;
-        }
-        
-        .password-input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .modal-btn {
-            padding: 8px 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        
-        .modal-btn.cancel {
-            background-color: #95a5a6;
-        }
-        
-        .confirm-message {
-            margin: 15px 0;
-        }
-        
-        .manage-members {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            margin-top: 20px;
-        }
-        
-        .manage-members h2 {
-            color: #2c3e50;
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .manage-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .manage-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-        
-        .manage-btn {
-            padding: 10px 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .edit-members-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 15px 0;
-            border: 1px solid #eee;
-            border-radius: 6px;
-            padding: 10px;
-        }
-        
-        .edit-member-item {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .edit-member-item:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .completed-members {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 10px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-        
-        .completed-member {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .completed-member-time {
-            font-size: 0.8rem;
             color: #7f8c8d;
         }
         
-        @media (max-width: 600px) {
-            .stats {
-                flex-direction: column;
-            }
-            
-            .stat-box {
-                margin: 5px 0;
-            }
-            
-            .members {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            }
-            
-            .manage-form {
-                flex-direction: column;
-            }
-            
-            .completed-member {
-                flex-direction: column;
-            }
-            
-            .completed-member-time {
-                margin-top: 5px;
-                font-size: 0.7rem;
-            }
+        .love-message {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .heart-btn {
+            width: 80px;
+            height: 80px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            border: none;
+            outline: none;
+        }
+        
+        .heart-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.6);
+        }
+        
+        .heart-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .heart-btn i {
+            color: white;
+            font-size: 40px;
+        }
+        
+        .special-event {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            font-size: 1.2rem;
+        }
+        
+        /* 彩带效果 */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .surprise-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+            max-width: 80%;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        
+        .close-surprise {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        /* 心跳动画 */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .heartbeat {
+            animation: heartbeat 1.5s infinite;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-    <h1>任务完成情况统计</h1>
-    
-    <div class="task-info">
-        <div class="task-title" contenteditable="true">请完成XX任务</div>
-        <div class="task-description" contenteditable="true">请在XX时间前完成XX任务，完成后点击自己的名字标记为已完成</div>
+    <div class="container">
+        <h1>亲爱的老婆 <i class="fas fa-heart" style="color: #e74c3c;"></i></h1>
         
-        <div class="stats">
-            <div class="stat-box">
-                <div>总人数</div>
-                <div id="total-count">56</div>
-            </div>
-            <div class="stat-box completed" id="completed-box">
-                <div>已完成</div>
-                <div id="completed-count">0</div>
-            </div>
-            <div class="stat-box pending" id="pending-box">
-                <div>未完成</div>
-                <div id="pending-count">56</div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="member-list">
-        <h2>未完成名单 (<span id="pending-title-count">56</span>人)</h2>
-        
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="搜索姓名...">
+        <div class="date-info">
+            <p id="current-date">今天是2023年1月1日，星期X</p>
+            <p id="solar-term">节气：XX</p>
+            <p id="festival">节日：XX</p>
         </div>
         
-        <div class="members" id="members-container">
-            <!-- 成员列表将通过JavaScript动态生成 -->
+        <div class="love-message" id="daily-message">
+            今天的情话加载中...
         </div>
         
-        <div class="no-members" id="all-completed" style="display: none;">
-            太棒了！所有人都已完成任务！
+        <div class="special-event" id="special-message" style="display: none;">
+            <!-- 特别节日/节气情话 -->
+        </div>
+        
+        <button class="heart-btn heartbeat" id="heart-btn">
+            <i class="fas fa-heart"></i>
+        </button>
+        
+        <div class="footer">
+            <p>每一天都比昨天更爱你 ❤️</p>
         </div>
     </div>
     
-    <button class="reset-btn" id="reset-btn">重置所有状态</button>
-    
-    <!-- 成员管理区域 -->
-    <div class="manage-members">
-        <h2>成员名单管理</h2>
-        <div class="manage-form">
-            <input type="text" id="new-member-input" class="manage-input" placeholder="输入新成员姓名">
-            <button class="manage-btn" id="add-member-btn">添加成员</button>
-        </div>
-        <div class="manage-form">
-            <button class="manage-btn" id="edit-members-btn">删减名单</button>
-        </div>
-    </div>
-    
-    <!-- 确认弹窗 -->
-    <div class="modal" id="confirm-modal">
-        <div class="modal-content">
-            <div class="modal-title">确认完成</div>
-            <div class="confirm-message" id="confirm-message">您确定要标记为已完成吗？</div>
-            <div style="text-align: right;">
-                <button class="modal-btn cancel" id="confirm-cancel">取消</button>
-                <button class="modal-btn" id="confirm-ok">确定</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 密码验证弹窗 -->
-    <div class="modal" id="password-modal">
-        <div class="modal-content">
-            <div class="modal-title">请输入重置密码</div>
-            <input type="password" class="password-input" id="password-input" placeholder="请输入密码">
-            <div style="text-align: right;">
-                <button class="modal-btn cancel" id="password-cancel">取消</button>
-                <button class="modal-btn" id="password-confirm">确认</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 删减名单弹窗 -->
-    <div class="modal" id="edit-members-modal">
-        <div class="modal-content">
-            <span class="modal-close" id="edit-members-close">&times;</span>
-            <div class="modal-title">删减名单 (共<span id="edit-members-count">0</span>人)</div>
-            <div class="edit-members-list" id="edit-members-list">
-                <!-- 成员列表将通过JavaScript动态生成 -->
-            </div>
-            <div style="text-align: right; margin-top: 15px;">
-                <button class="modal-btn cancel" id="edit-members-cancel">取消</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 删除确认弹窗 -->
-    <div class="modal" id="delete-confirm-modal">
-        <div class="modal-content">
-            <div class="modal-title">删除确认</div>
-            <div class="confirm-message" id="delete-confirm-message">确定要删除该成员吗？</div>
-            <input type="password" class="password-input" id="delete-password-input" placeholder="请输入管理密码">
-            <div style="text-align: right; margin-top: 15px;">
-                <button class="modal-btn cancel" id="delete-cancel">取消</button>
-                <button class="modal-btn" id="delete-confirm">确认删除</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 已完成人员弹窗 -->
-    <div class="modal" id="completed-modal">
-        <div class="modal-content">
-            <span class="modal-close" id="completed-modal-close">&times;</span>
-            <div class="modal-title">已完成人员名单 (<span id="completed-modal-count">0</span>人)</div>
-            <div class="completed-members" id="completed-members-list">
-                <!-- 已完成人员列表 -->
-            </div>
-        </div>
+    <div class="surprise-message" id="surprise-message">
+        <span class="close-surprise" id="close-surprise">&times;</span>
+        <h2 id="surprise-title">惊喜!</h2>
+        <p id="surprise-content">今天也是爱你的一天!</p>
     </div>
     
     <script>
-        // 成员名单 (56人)
-        let allMembers = JSON.parse(localStorage.getItem('allMembers')) || [
-            "唐明星", "李志杰", "喻志强", "李乐宇", "陈仁臻", "周攀", 
-            "陈建树", "陈可翼", "陈孝情", "陈秀玲", "陈艳", "崔玉轩", 
-            "范文政", "高纯健", "高吉龙", "韩镗泷", "贾秉政", "来代军", 
-            "李林龙", "李烨", "李毅", "刘博", "刘盟", "龙鸳鸳", 
-            "卢梅丽", "陆铭雪", "孟庆子", "任博", "任莹莹", "孙香港", 
-            "王畅", "王栋", "王晓丹", "王子实", "吴宝臣", "武银路", 
-            "熊俊杰", "杨永龙", "尹佳俊", "张姣姣", "张杰", "张强强", 
-            "张永伟", "张之诚", "赵婷", "赵文彬", "左鑫", "曾磊", 
-            "宋青峰", "张成", "刘垚坤", "贺淋锋", "高明", "刁焕", 
-            "叶今", "郭金坤"
+        // 情话库
+        const loveMessages = [
+            "你知道你和星星有什么区别吗？星星在天上，你在我心里。",
+            "我想买一块地，什么地？你的死心塌地。",
+            "你知道我的缺点是什么吗？是缺点你。",
+            "你猜我想喝什么？我想呵护你。",
+            "你知道你和猴子的区别是什么吗？猴子住在树上，你住在我心里。",
+            "你知道我为什么感冒了吗？因为我对你没有抵抗力。",
+            "你上辈子一定是碳酸饮料吧，为什么我一看到你就能开心的冒泡。",
+            "你知道我最大的缺点是什么吗？缺点你。",
+            "你知道我想成为什么人吗？你的人。",
+            "你知道你和星星的区别吗？星星点亮了黑夜，而你点亮了我的心。",
+            "你知道我为什么最近吃素吗？因为你是我的菜。",
+            "你知道你和阳光的区别吗？阳光照在身上，你照进心里。",
+            "你知道我为什么最近胖了吗？因为你在我心里的分量越来越重了。",
+            "你知道你和地图的区别吗？地图上有很多地方，而我的眼里只有你。",
+            "你知道你和糖果的区别吗？糖果是甜的，而你比糖果还要甜。",
+            "你知道我最近为什么总是发呆吗？因为想你想得入神了。",
+            "你知道你和书的区别吗？书可以合上，而我对你的思念却合不上。",
+            "你知道我和唐僧的区别吗？唐僧取经，我娶你。",
+            "你知道你和手机的区别吗？手机离不开充电器，而我离不开你。",
+            "你知道我为什么喜欢笑吗？因为每次想到你，嘴角就不自觉上扬。",
+            "你知道你和太阳的区别吗？太阳照耀大地，而你温暖我的心。",
+            "你知道我为什么总是迟到吗？因为每次见你都要精心准备很久。",
+            "你知道你和雨伞的区别吗？雨伞遮风挡雨，而你遮住了我所有的忧愁。",
+            "你知道我为什么总是犯困吗？因为梦里全是你。",
+            "你知道你和音乐的区别吗？音乐悦耳，而你悦心。",
+            "你知道我为什么喜欢冬天吗？因为可以和你一起取暖。",
+            "你知道你和星星的区别吗？星星会眨眼，而你让我的心跳加速。",
+            "你知道我为什么喜欢夏天吗？因为可以和你一起吃冰淇淋。",
+            "你知道你和花朵的区别吗？花朵会凋谢，而我对你的爱永不凋零。",
+            "你知道我为什么喜欢秋天吗？因为可以和你一起看落叶。",
+            "你知道你和春天的区别吗？春天带来生机，而你带来心动。",
+            "你知道我为什么喜欢晴天吗？因为你的笑容比阳光还灿烂。",
+            "你知道你和月亮的区别吗？月亮有阴晴圆缺，而我对你的爱始终如一。",
+            "你知道我为什么喜欢雨天吗？因为可以和你共撑一把伞。",
+            "你知道你和雪花的区别吗？雪花会融化，而我对你的爱不会。",
+            "你知道我为什么喜欢巧克力吗？因为它和你一样甜。",
+            "你知道你和咖啡的区别吗？咖啡提神，而你让我神魂颠倒。",
+            "你知道我为什么喜欢大海吗？因为对你的爱像海一样深。",
+            "你知道你和山的区别吗？山巍峨不动，而我的心为你跳动。",
+            "你知道我为什么喜欢星空吗？因为想和你一起数星星。",
+            "你知道你和云朵的区别吗？云朵飘忽不定，而我只想停留在你身边。",
+            "你知道我为什么喜欢旅行吗？因为想和你一起看世界。",
+            "你知道你和风的区别吗？风来去无踪，而我对你的思念无处不在。",
+            "你知道我为什么喜欢读书吗？因为想读懂你的心。",
+            "你知道你和画的区别吗？画可以欣赏，而你让我想珍藏一生。",
+            "你知道我为什么喜欢唱歌吗？因为想唱情歌给你听。",
+            "你知道你和电影的区别吗？电影有结局，而我们的故事没有终点。",
+            "你知道我为什么喜欢拍照吗？因为想记录有你的每一个瞬间。",
+            "你知道你和梦的区别吗？梦会醒，而我对你的爱不会。",
+            "你知道我为什么喜欢微笑吗？因为看到你就不自觉笑了。",
+            // 可以继续添加更多情话...
         ];
         
-        // 从本地存储加载已完成成员（带时间戳）
-        let completedMembers = JSON.parse(localStorage.getItem('completedMembers')) || [];
+        // 节气情话
+        const solarTermMessages = {
+            "立春": "立春了，万物复苏，而我对你的爱也在不断生长。",
+            "雨水": "雨水滋润大地，而你滋润我的心田。",
+            "惊蛰": "惊蛰雷动，不如你一笑让我心动。",
+            "春分": "春分昼夜平分，而我愿把全部时间都分给你。",
+            "清明": "清明时节雨纷纷，而我对你的思念更深沉。",
+            "谷雨": "谷雨播种希望，而你播种了我全部的爱。",
+            "立夏": "立夏了，天气渐热，而我对你的热情更甚。",
+            "小满": "小满未满，而我对你的爱已经满溢。",
+            "芒种": "芒种忙种，而我忙着爱你。",
+            "夏至": "夏至日最长，而我对你的思念更长。",
+            "小暑": "小暑炎热，而我对你的爱更热烈。",
+            "大暑": "大暑最热，而你是我最热的爱恋。",
+            "立秋": "立秋了，暑气渐消，而我对你的爱丝毫不减。",
+            "处暑": "处暑暑气止，而我对你的爱永不止息。",
+            "白露": "白露凝霜，而我的心里装满了你。",
+            "秋分": "秋分昼夜均，而我愿与你平分秋色。",
+            "寒露": "寒露渐冷，而你的温暖让我心热。",
+            "霜降": "霜降天寒，而你的拥抱最温暖。",
+            "立冬": "立冬了，万物收藏，而我想把你收藏在心里。",
+            "小雪": "小雪飘飘，而我对你的爱纷纷扬扬。",
+            "大雪": "大雪纷飞，而我对你的爱铺天盖地。",
+            "冬至": "冬至夜最长，而我对你的思念更长。",
+            "小寒": "小寒冷冽，而你的笑容最温暖。",
+            "大寒": "大寒最冷，而你是我最暖的依靠。"
+        };
+        
+        // 节日情话
+        const festivalMessages = {
+            "元旦": "新年第一天，第一个想到的就是你，元旦快乐我的爱！",
+            "情人节": "情人节快乐！你是我今生唯一的情人，也是永远的挚爱。",
+            "妇女节": "女神节快乐！在我心中你永远是最美的女神。",
+            "劳动节": "劳动节快乐！感谢你为这个家付出的一切，辛苦了亲爱的。",
+            "儿童节": "儿童节快乐我的小宝贝！在我心里你永远是需要我呵护的小朋友。",
+            "七夕": "七夕快乐！牛郎织女一年一见，而我们天天相见更幸福。",
+            "中秋节": "中秋月圆人团圆，而我最想团圆的人就是你。",
+            "国庆节": "国庆节快乐！和你在一起的每一天都值得庆祝。",
+            "圣诞节": "圣诞快乐！你就是我今年最想要的礼物。",
+            "生日": "生日快乐我的爱！你出生的那天就是我最感恩的日子。",
+            "结婚纪念日": "结婚纪念日快乐！每一天都比昨天更爱你。",
+            "相识纪念日": "还记得我们相识的那天吗？那是我生命中最美好的一天。"
+        };
+        
+        // 获取当前日期信息
+        function getCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
+            const weekday = weekdays[now.getDay()];
+            
+            return {
+                year,
+                month,
+                day,
+                weekday,
+                dateStr: `${year}年${month}月${day}日，星期${weekday}`,
+                dayOfYear: Math.floor((now - new Date(year, 0, 0)) / (1000 * 60 * 60 * 24))
+            };
+        }
+        
+        // 获取节气信息（简化版，实际节气计算复杂）
+        function getSolarTerm(date) {
+            // 这里是一个简化的节气判断，实际节气计算需要精确的天文计算
+            const terms = [
+                {name: "小寒", month: 1, day: 5},
+                {name: "大寒", month: 1, day: 20},
+                {name: "立春", month: 2, day: 4},
+                {name: "雨水", month: 2, day: 19},
+                {name: "惊蛰", month: 3, day: 5},
+                {name: "春分", month: 3, day: 20},
+                {name: "清明", month: 4, day: 4},
+                {name: "谷雨", month: 4, day: 20},
+                {name: "立夏", month: 5, day: 5},
+                {name: "小满", month: 5, day: 21},
+                {name: "芒种", month: 6, day: 6},
+                {name: "夏至", month: 6, day: 21},
+                {name: "小暑", month: 7, day: 7},
+                {name: "大暑", month: 7, day: 23},
+                {name: "立秋", month: 8, day: 7},
+                {name: "处暑", month: 8, day: 23},
+                {name: "白露", month: 9, day: 7},
+                {name: "秋分", month: 9, day: 23},
+                {name: "寒露", month: 10, day: 8},
+                {name: "霜降", month: 10, day: 23},
+                {name: "立冬", month: 11, day: 7},
+                {name: "小雪", month: 11, day: 22},
+                {name: "大雪", month: 12, day: 7},
+                {name: "冬至", month: 12, day: 22}
+            ];
+            
+            for (const term of terms) {
+                if (date.month === term.month && date.day === term.day) {
+                    return term.name;
+                }
+            }
+            
+            return null;
+        }
+        
+        // 获取节日信息（简化版）
+        function getFestival(date) {
+            const festivals = [
+                {name: "元旦", month: 1, day: 1},
+                {name: "情人节", month: 2, day: 14},
+                {name: "妇女节", month: 3, day: 8},
+                {name: "劳动节", month: 5, day: 1},
+                {name: "儿童节", month: 6, day: 1},
+                {name: "七夕", month: 8, day: 25}, // 七夕日期每年不同，这里简化
+                {name: "中秋节", month: 9, day: 21}, // 中秋节日期每年不同，这里简化
+                {name: "国庆节", month: 10, day: 1},
+                {name: "圣诞节", month: 12, day: 25}
+            ];
+            
+            for (const festival of festivals) {
+                if (date.month === festival.month && date.day === festival.day) {
+                    return festival.name;
+                }
+            }
+            
+            return null;
+        }
+        
+        // 获取每日情话（基于日期确保每天不同）
+        function getDailyLoveMessage(date) {
+            // 使用日期作为种子确保每天相同
+            const seed = date.year * 10000 + date.month * 100 + date.day;
+            const index = seed % loveMessages.length;
+            return loveMessages[index];
+        }
+        
+        // 创建彩带效果
+        function createConfetti() {
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                
+                document.body.appendChild(confetti);
+                
+                // 动画
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1, transform: 'rotate(0deg)' },
+                    { top: '100vh', opacity: 0, transform: 'rotate(' + (Math.random() * 360) + 'deg)' }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                });
+                
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+        
+        // 显示惊喜消息
+        function showSurpriseMessage() {
+            const surpriseMessages = [
+                "你是我的今天和所有的明天",
+                "遇见你是我这辈子最幸运的事",
+                "我想和你一起慢慢变老",
+                "你是我生命中最美的风景",
+                "有你的地方就是家",
+                "爱你是我做过最正确的事",
+                "你是我每天早上醒来的理由",
+                "我的世界因你而完整",
+                "你是我今生唯一的挚爱",
+                "和你在一起的每一秒都值得珍惜"
+            ];
+            
+            const randomMessage = surpriseMessages[Math.floor(Math.random() * surpriseMessages.length)];
+            document.getElementById('surprise-content').textContent = randomMessage;
+            document.getElementById('surprise-message').style.display = 'block';
+        }
         
         // 初始化页面
         function initPage() {
-            // 渲染成员列表
-            renderMemberList();
+            const date = getCurrentDate();
             
-            // 更新统计数字
-            updateStats();
+            // 显示日期信息
+            document.getElementById('current-date').textContent = date.dateStr;
             
-            // 搜索功能
-            document.getElementById('search-input').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const members = document.querySelectorAll('.member:not(.completed)');
-                
-                members.forEach(member => {
-                    const name = member.textContent.toLowerCase();
-                    if (name.includes(searchTerm)) {
-                        member.style.display = '';
-                    } else {
-                        member.style.display = 'none';
-                    }
-                });
-            });
-            
-            // 已完成按钮点击事件
-            document.getElementById('completed-box').addEventListener('click', showCompletedModal);
-            
-            // 关闭已完成弹窗
-            document.getElementById('completed-modal-close').addEventListener('click', function() {
-                document.getElementById('completed-modal').style.display = 'none';
-            });
-            
-            // 重置按钮
-            document.getElementById('reset-btn').addEventListener('click', showPasswordModal);
-            
-            // 密码弹窗按钮
-            document.getElementById('password-cancel').addEventListener('click', function() {
-                document.getElementById('password-modal').style.display = 'none';
-            });
-            
-            document.getElementById('password-confirm').addEventListener('click', function() {
-                const password = document.getElementById('password-input').value;
-                if (password === '111222') {
-                    resetAllStatus();
-                    document.getElementById('password-modal').style.display = 'none';
-                    document.getElementById('password-input').value = '';
-                } else {
-                    alert('密码错误！');
-                }
-            });
-            
-            // 确认弹窗按钮
-            document.getElementById('confirm-cancel').addEventListener('click', function() {
-                document.getElementById('confirm-modal').style.display = 'none';
-                currentMemberToComplete = null;
-            });
-            
-            document.getElementById('confirm-ok').addEventListener('click', function() {
-                if (currentMemberToComplete) {
-                    completeMember(currentMemberToComplete);
-                }
-                document.getElementById('confirm-modal').style.display = 'none';
-                currentMemberToComplete = null;
-            });
-            
-            // 添加成员按钮
-            document.getElementById('add-member-btn').addEventListener('click', function() {
-                const newMember = document.getElementById('new-member-input').value.trim();
-                if (newMember) {
-                    if (!allMembers.includes(newMember)) {
-                        allMembers.push(newMember);
-                        saveAllMembers();
-                        renderMemberList();
-                        updateStats();
-                        document.getElementById('new-member-input').value = '';
-                        alert(`成功添加成员: ${newMember}`);
-                    } else {
-                        alert('该成员已存在！');
-                    }
-                } else {
-                    alert('请输入成员姓名！');
-                }
-            });
-            
-            // 删减名单按钮
-            document.getElementById('edit-members-btn').addEventListener('click', showEditMembersModal);
-            
-            // 关闭删减名单弹窗
-            document.getElementById('edit-members-close').addEventListener('click', function() {
-                document.getElementById('edit-members-modal').style.display = 'none';
-            });
-            
-            document.getElementById('edit-members-cancel').addEventListener('click', function() {
-                document.getElementById('edit-members-modal').style.display = 'none';
-            });
-            
-            // 删除确认弹窗按钮
-            document.getElementById('delete-cancel').addEventListener('click', function() {
-                document.getElementById('delete-confirm-modal').style.display = 'none';
-                currentMemberToDelete = null;
-            });
-            
-            document.getElementById('delete-confirm').addEventListener('click', function() {
-                const password = document.getElementById('delete-password-input').value;
-                if (password === '111222') {
-                    if (currentMemberToDelete) {
-                        deleteMember(currentMemberToDelete);
-                    }
-                    document.getElementById('delete-confirm-modal').style.display = 'none';
-                    document.getElementById('delete-password-input').value = '';
-                    currentMemberToDelete = null;
-                } else {
-                    alert('密码错误！');
-                }
-            });
-        }
-        
-        // 保存所有成员到本地存储
-        function saveAllMembers() {
-            localStorage.setItem('allMembers', JSON.stringify(allMembers));
-        }
-        
-        // 渲染成员列表
-        function renderMemberList() {
-            const container = document.getElementById('members-container');
-            container.innerHTML = '';
-            
-            // 筛选未完成成员
-            const pendingMembers = allMembers.filter(member => 
-                !completedMembers.some(m => m.name === member));
-            
-            if (pendingMembers.length === 0 && allMembers.length > 0) {
-                document.getElementById('all-completed').style.display = 'block';
-                document.getElementById('members-container').style.display = 'none';
+            // 获取并显示节气
+            const solarTerm = getSolarTerm(date);
+            if (solarTerm) {
+                document.getElementById('solar-term').textContent = `节气：${solarTerm}`;
+                document.getElementById('special-message').textContent = solarTermMessages[solarTerm];
+                document.getElementById('special-message').style.display = 'block';
             } else {
-                document.getElementById('all-completed').style.display = 'none';
-                document.getElementById('members-container').style.display = 'grid';
-                
-                // 按原始顺序显示
-                allMembers.forEach(member => {
-                    if (!completedMembers.some(m => m.name === member)) {
-                        const memberElement = document.createElement('div');
-                        memberElement.className = 'member';
-                        memberElement.textContent = member;
-                        memberElement.addEventListener('click', () => confirmComplete(member));
-                        container.appendChild(memberElement);
-                    }
-                });
+                document.getElementById('solar-term').textContent = '';
             }
             
-            // 更新未完成人数标题
-            document.getElementById('pending-title-count').textContent = pendingMembers.length;
-            document.getElementById('total-count').textContent = allMembers.length;
-        }
-        
-        // 显示删减名单弹窗
-        function showEditMembersModal() {
-            const modal = document.getElementById('edit-members-modal');
-            const list = document.getElementById('edit-members-list');
-            const count = document.getElementById('edit-members-count');
-            
-            list.innerHTML = '';
-            count.textContent = allMembers.length;
-            
-            if (allMembers.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: #7f8c8d;">暂无成员</div>';
+            // 获取并显示节日
+            const festival = getFestival(date);
+            if (festival) {
+                document.getElementById('festival').textContent = `节日：${festival}`;
+                if (!solarTerm) { // 如果当天不是节气才显示节日情话
+                    document.getElementById('special-message').textContent = festivalMessages[festival];
+                    document.getElementById('special-message').style.display = 'block';
+                }
             } else {
-                allMembers.forEach(member => {
-                    const memberElement = document.createElement('div');
-                    memberElement.className = 'edit-member-item';
-                    memberElement.textContent = member;
-                    memberElement.addEventListener('click', () => confirmDeleteMember(member));
-                    list.appendChild(memberElement);
-                });
+                document.getElementById('festival').textContent = '';
             }
             
-            modal.style.display = 'flex';
-        }
-        
-        // 确认删除成员
-        function confirmDeleteMember(member) {
-            currentMemberToDelete = member;
-            document.getElementById('delete-confirm-message').textContent = `确定要删除成员 ${member} 吗？`;
-            document.getElementById('delete-confirm-modal').style.display = 'flex';
-            document.getElementById('edit-members-modal').style.display = 'none';
-        }
-        
-        // 删除成员
-        function deleteMember(member) {
-            const index = allMembers.indexOf(member);
-            if (index > -1) {
-                allMembers.splice(index, 1);
-                // 如果该成员已完成，也从已完成列表中移除
-                completedMembers = completedMembers.filter(m => m.name !== member);
-                localStorage.setItem('completedMembers', JSON.stringify(completedMembers));
-                saveAllMembers();
-                renderMemberList();
-                updateStats();
-                alert(`已删除成员: ${member}`);
-            }
-        }
-        
-        // 确认完成
-        function confirmComplete(member) {
-            currentMemberToComplete = member;
-            document.getElementById('confirm-message').textContent = `确定要将 ${member} 标记为已完成吗？`;
-            document.getElementById('confirm-modal').style.display = 'flex';
-        }
-        
-        // 实际完成成员操作
-        function completeMember(member) {
-            if (!completedMembers.some(m => m.name === member)) {
-                completedMembers.push({
-                    name: member,
-                    time: new Date().toISOString()
-                });
-                localStorage.setItem('completedMembers', JSON.stringify(completedMembers));
-                renderMemberList();
-                updateStats();
-                
-                // 显示完成提示
-                alert(`${member} 已标记为已完成！`);
-            }
-        }
-        
-        // 显示已完成人员弹窗（按时间顺序）
-        function showCompletedModal() {
-            const modal = document.getElementById('completed-modal');
-            const list = document.getElementById('completed-members-list');
-            const count = document.getElementById('completed-modal-count');
+            // 显示每日情话
+            document.getElementById('daily-message').textContent = getDailyLoveMessage(date);
             
-            list.innerHTML = '';
-            count.textContent = completedMembers.length;
+            // 爱心按钮事件
+            document.getElementById('heart-btn').addEventListener('click', function() {
+                createConfetti();
+                showSurpriseMessage();
+            });
             
-            if (completedMembers.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: #7f8c8d;">暂无已完成人员</div>';
-            } else {
-                // 按时间排序
-                const sortedMembers = [...completedMembers].sort((a, b) => 
-                    new Date(a.time) - new Date(b.time));
-                
-                sortedMembers.forEach(member => {
-                    const memberElement = document.createElement('div');
-                    memberElement.className = 'completed-member';
-                    
-                    const nameElement = document.createElement('span');
-                    nameElement.textContent = member.name;
-                    
-                    const timeElement = document.createElement('span');
-                    timeElement.className = 'completed-member-time';
-                    timeElement.textContent = formatTime(member.time);
-                    
-                    memberElement.appendChild(nameElement);
-                    memberElement.appendChild(timeElement);
-                    list.appendChild(memberElement);
-                });
-            }
-            
-            modal.style.display = 'flex';
-        }
-        
-        // 格式化时间显示
-        function formatTime(isoString) {
-            const date = new Date(isoString);
-            return `${date.getFullYear()}-${padZero(date.getMonth()+1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
-        }
-        
-        // 补零函数
-        function padZero(num) {
-            return num.toString().padStart(2, '0');
-        }
-        
-        // 更新统计数据
-        function updateStats() {
-            const total = allMembers.length;
-            const completed = completedMembers.length;
-            const pending = total - completed;
-            
-            document.getElementById('total-count').textContent = total;
-            document.getElementById('completed-count').textContent = completed;
-            document.getElementById('pending-count').textContent = pending;
-        }
-        
-        // 显示密码弹窗
-        function showPasswordModal() {
-            document.getElementById('password-modal').style.display = 'flex';
-        }
-        
-        // 重置所有状态
-        function resetAllStatus() {
-            completedMembers = [];
-            localStorage.setItem('completedMembers', JSON.stringify(completedMembers));
-            renderMemberList();
-            updateStats();
-            alert('所有状态已重置！');
+            // 关闭惊喜消息
+            document.getElementById('close-surprise').addEventListener('click', function() {
+                document.getElementById('surprise-message').style.display = 'none';
+            });
         }
         
         // 页面加载完成后初始化
@@ -756,3 +472,4 @@
     </script>
 </body>
 </html>
+```
