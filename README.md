@@ -1,11 +1,17 @@
+
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>给最爱的老婆</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
             margin: 0;
             padding: 0;
@@ -16,60 +22,64 @@
             justify-content: center;
             color: #333;
             text-align: center;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
         }
         
         .container {
-            max-width: 800px;
-            padding: 30px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 92%;
+            max-width: 500px;
+            padding: 20px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: hidden;
+            word-break: break-word;
         }
         
         h1 {
             color: #e74c3c;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
+            margin: 15px 0;
+            font-size: 1.8rem;
+            font-weight: 600;
         }
         
         .date-info {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-size: 1rem;
             color: #7f8c8d;
+            line-height: 1.5;
         }
         
         .love-message {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             line-height: 1.6;
-            margin: 30px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
             background-color: rgba(231, 76, 60, 0.1);
             border-radius: 10px;
-            border-left: 5px solid #e74c3c;
+            border-left: 4px solid #e74c3c;
         }
         
         .heart-btn {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background-color: #e74c3c;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 30px auto;
+            margin: 20px auto;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
             transition: all 0.3s;
             position: relative;
             border: none;
             outline: none;
-        }
-        
-        .heart-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.6);
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .heart-btn:active {
@@ -78,26 +88,28 @@
         
         .heart-btn i {
             color: white;
-            font-size: 40px;
+            font-size: 35px;
         }
         
         .special-event {
-            margin-top: 20px;
+            margin-top: 15px;
             padding: 10px;
             background-color: rgba(52, 152, 219, 0.1);
-            border-radius: 10px;
-            border-left: 5px solid #3498db;
-            font-size: 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            font-size: 1.1rem;
+            line-height: 1.5;
         }
         
         /* 彩带效果 */
         .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
+            position: fixed;
+            width: 8px;
+            height: 8px;
             background-color: #f00;
             border-radius: 50%;
             pointer-events: none;
+            z-index: 999;
         }
         
         .surprise-message {
@@ -105,35 +117,37 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
             display: none;
-            max-width: 80%;
+            width: 85%;
+            max-width: 350px;
             text-align: center;
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.3s;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translate(-50%, -40%); }
+            from { opacity: 0; transform: translate(-50%, -45%); }
             to { opacity: 1; transform: translate(-50%, -50%); }
         }
         
         .close-surprise {
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 24px;
+            top: 8px;
+            right: 12px;
+            font-size: 20px;
             cursor: pointer;
             color: #7f8c8d;
+            padding: 5px;
         }
         
         .footer {
-            margin-top: 30px;
+            margin-top: 20px;
             color: #7f8c8d;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         /* 心跳动画 */
@@ -148,10 +162,47 @@
         .heartbeat {
             animation: heartbeat 1.5s infinite;
         }
+        
+        /* 微信浏览器适配 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                width: 90%;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+                margin: 10px 0;
+            }
+            
+            .love-message {
+                font-size: 1.1rem;
+                padding: 12px;
+                margin: 15px 0;
+            }
+            
+            .date-info {
+                font-size: 0.95rem;
+            }
+            
+            .special-event {
+                font-size: 1rem;
+            }
+        }
+        
+        /* 防止长按菜单 */
+        .no-context-menu {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<body>
+<body class="no-context-menu">
     <div class="container">
         <h1>亲爱的老婆 <i class="fas fa-heart" style="color: #e74c3c;"></i></h1>
         
@@ -180,8 +231,8 @@
     
     <div class="surprise-message" id="surprise-message">
         <span class="close-surprise" id="close-surprise">&times;</span>
-        <h2 id="surprise-title">惊喜!</h2>
-        <p id="surprise-content">今天也是爱你的一天!</p>
+        <h2 id="surprise-title" style="margin: 10px 0; font-size: 1.3rem;">惊喜!</h2>
+        <p id="surprise-content" style="margin: 15px 0; font-size: 1.1rem;">今天也是爱你的一天!</p>
     </div>
     
     <script>
@@ -207,36 +258,6 @@
             "你知道我和唐僧的区别吗？唐僧取经，我娶你。",
             "你知道你和手机的区别吗？手机离不开充电器，而我离不开你。",
             "你知道我为什么喜欢笑吗？因为每次想到你，嘴角就不自觉上扬。",
-            "你知道你和太阳的区别吗？太阳照耀大地，而你温暖我的心。",
-            "你知道我为什么总是迟到吗？因为每次见你都要精心准备很久。",
-            "你知道你和雨伞的区别吗？雨伞遮风挡雨，而你遮住了我所有的忧愁。",
-            "你知道我为什么总是犯困吗？因为梦里全是你。",
-            "你知道你和音乐的区别吗？音乐悦耳，而你悦心。",
-            "你知道我为什么喜欢冬天吗？因为可以和你一起取暖。",
-            "你知道你和星星的区别吗？星星会眨眼，而你让我的心跳加速。",
-            "你知道我为什么喜欢夏天吗？因为可以和你一起吃冰淇淋。",
-            "你知道你和花朵的区别吗？花朵会凋谢，而我对你的爱永不凋零。",
-            "你知道我为什么喜欢秋天吗？因为可以和你一起看落叶。",
-            "你知道你和春天的区别吗？春天带来生机，而你带来心动。",
-            "你知道我为什么喜欢晴天吗？因为你的笑容比阳光还灿烂。",
-            "你知道你和月亮的区别吗？月亮有阴晴圆缺，而我对你的爱始终如一。",
-            "你知道我为什么喜欢雨天吗？因为可以和你共撑一把伞。",
-            "你知道你和雪花的区别吗？雪花会融化，而我对你的爱不会。",
-            "你知道我为什么喜欢巧克力吗？因为它和你一样甜。",
-            "你知道你和咖啡的区别吗？咖啡提神，而你让我神魂颠倒。",
-            "你知道我为什么喜欢大海吗？因为对你的爱像海一样深。",
-            "你知道你和山的区别吗？山巍峨不动，而我的心为你跳动。",
-            "你知道我为什么喜欢星空吗？因为想和你一起数星星。",
-            "你知道你和云朵的区别吗？云朵飘忽不定，而我只想停留在你身边。",
-            "你知道我为什么喜欢旅行吗？因为想和你一起看世界。",
-            "你知道你和风的区别吗？风来去无踪，而我对你的思念无处不在。",
-            "你知道我为什么喜欢读书吗？因为想读懂你的心。",
-            "你知道你和画的区别吗？画可以欣赏，而你让我想珍藏一生。",
-            "你知道我为什么喜欢唱歌吗？因为想唱情歌给你听。",
-            "你知道你和电影的区别吗？电影有结局，而我们的故事没有终点。",
-            "你知道我为什么喜欢拍照吗？因为想记录有你的每一个瞬间。",
-            "你知道你和梦的区别吗？梦会醒，而我对你的爱不会。",
-            "你知道我为什么喜欢微笑吗？因为看到你就不自觉笑了。",
             // 可以继续添加更多情话...
         ];
         
@@ -266,7 +287,7 @@
             "冬至": "冬至夜最长，而我对你的思念更长。",
             "小寒": "小寒冷冽，而你的笑容最温暖。",
             "大寒": "大寒最冷，而你是我最暖的依靠。"
-        };
+        ];
         
         // 节日情话
         const festivalMessages = {
@@ -303,9 +324,8 @@
             };
         }
         
-        // 获取节气信息（简化版，实际节气计算复杂）
+        // 获取节气信息（简化版）
         function getSolarTerm(date) {
-            // 这里是一个简化的节气判断，实际节气计算需要精确的天文计算
             const terms = [
                 {name: "小寒", month: 1, day: 5},
                 {name: "大寒", month: 1, day: 20},
@@ -350,8 +370,8 @@
                 {name: "妇女节", month: 3, day: 8},
                 {name: "劳动节", month: 5, day: 1},
                 {name: "儿童节", month: 6, day: 1},
-                {name: "七夕", month: 8, day: 25}, // 七夕日期每年不同，这里简化
-                {name: "中秋节", month: 9, day: 21}, // 中秋节日期每年不同，这里简化
+                {name: "七夕", month: 8, day: 25},
+                {name: "中秋节", month: 9, day: 21},
                 {name: "国庆节", month: 10, day: 1},
                 {name: "圣诞节", month: 12, day: 25}
             ];
@@ -365,35 +385,36 @@
             return null;
         }
         
-        // 获取每日情话（基于日期确保每天不同）
+        // 获取每日情话
         function getDailyLoveMessage(date) {
-            // 使用日期作为种子确保每天相同
             const seed = date.year * 10000 + date.month * 100 + date.day;
             const index = seed % loveMessages.length;
             return loveMessages[index];
         }
         
-        // 创建彩带效果
+        // 创建彩带效果（优化移动端性能）
         function createConfetti() {
             const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c'];
+            const confettiCount = isMobile() ? 50 : 100; // 移动端减少数量
             
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < confettiCount; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 confetti.style.left = Math.random() * 100 + 'vw';
                 confetti.style.top = -10 + 'px';
-                confetti.style.width = Math.random() * 10 + 5 + 'px';
-                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.width = Math.random() * 8 + 4 + 'px';
+                confetti.style.height = Math.random() * 8 + 4 + 'px';
                 
                 document.body.appendChild(confetti);
                 
-                // 动画
+                const animationDuration = Math.random() * 2000 + 1500;
+                
                 const animation = confetti.animate([
                     { top: '-10px', opacity: 1, transform: 'rotate(0deg)' },
                     { top: '100vh', opacity: 0, transform: 'rotate(' + (Math.random() * 360) + 'deg)' }
                 ], {
-                    duration: Math.random() * 3000 + 2000,
+                    duration: animationDuration,
                     easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
                 });
                 
@@ -401,6 +422,11 @@
                     confetti.remove();
                 };
             }
+        }
+        
+        // 检测移动设备
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
         
         // 显示惊喜消息
@@ -421,6 +447,20 @@
             const randomMessage = surpriseMessages[Math.floor(Math.random() * surpriseMessages.length)];
             document.getElementById('surprise-content').textContent = randomMessage;
             document.getElementById('surprise-message').style.display = 'block';
+            
+            // 点击外部关闭
+            setTimeout(() => {
+                document.addEventListener('click', closeSurpriseOnClickOutside, true);
+            }, 100);
+        }
+        
+        // 点击惊喜框外部关闭
+        function closeSurpriseOnClickOutside(e) {
+            const surpriseMsg = document.getElementById('surprise-message');
+            if (!surpriseMsg.contains(e.target) && e.target.id !== 'heart-btn') {
+                surpriseMsg.style.display = 'none';
+                document.removeEventListener('click', closeSurpriseOnClickOutside, true);
+            }
         }
         
         // 初始化页面
@@ -444,7 +484,7 @@
             const festival = getFestival(date);
             if (festival) {
                 document.getElementById('festival').textContent = `节日：${festival}`;
-                if (!solarTerm) { // 如果当天不是节气才显示节日情话
+                if (!solarTerm) {
                     document.getElementById('special-message').textContent = festivalMessages[festival];
                     document.getElementById('special-message').style.display = 'block';
                 }
@@ -455,21 +495,58 @@
             // 显示每日情话
             document.getElementById('daily-message').textContent = getDailyLoveMessage(date);
             
-            // 爱心按钮事件
-            document.getElementById('heart-btn').addEventListener('click', function() {
-                createConfetti();
-                showSurpriseMessage();
-            });
+            // 爱心按钮事件（同时支持触摸和点击）
+            const heartBtn = document.getElementById('heart-btn');
+            heartBtn.addEventListener('click', handleHeartClick);
+            heartBtn.addEventListener('touchend', handleHeartClick);
             
             // 关闭惊喜消息
             document.getElementById('close-surprise').addEventListener('click', function() {
                 document.getElementById('surprise-message').style.display = 'none';
+                document.removeEventListener('click', closeSurpriseOnClickOutside, true);
             });
+            
+            // 防止微信下拉露出背景
+            document.addEventListener('touchmove', function(e) {
+                if (e.target === document.documentElement || e.target === document.body) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+        
+        // 处理爱心点击（防抖）
+        let lastClickTime = 0;
+        function handleHeartClick(e) {
+            e.preventDefault();
+            const now = Date.now();
+            if (now - lastClickTime < 1000) return; // 1秒内只响应一次
+            
+            lastClickTime = now;
+            createConfetti();
+            showSurpriseMessage();
+            
+            // 添加点击反馈
+            const btn = e.currentTarget;
+            btn.classList.remove('heartbeat');
+            void btn.offsetWidth; // 触发重绘
+            btn.classList.add('heartbeat');
         }
         
         // 页面加载完成后初始化
-        window.addEventListener('DOMContentLoaded', initPage);
+        document.addEventListener('DOMContentLoaded', initPage);
+        
+        // 微信浏览器特殊处理
+        function isWeChat() {
+            return /MicroMessenger/i.test(navigator.userAgent);
+        }
+        
+        if (isWeChat()) {
+            // 微信浏览器可能需要额外的样式调整
+            document.body.style.height = window.innerHeight + 'px';
+            window.addEventListener('resize', function() {
+                document.body.style.height = window.innerHeight + 'px';
+            });
+        }
     </script>
 </body>
 </html>
-```
