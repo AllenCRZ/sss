@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务完成情况统计</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .task-info {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .task-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e74c3c;
+        }
+        
+        .task-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-box.completed {
+            background-color: #2ecc71;
+        }
+        
+        .stat-box.pending {
+            background-color: #e74c3c;
+        }
+        
+        .member-list {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .member-list h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .members {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .member {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #ddd;
+        }
+        
+        .member:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .member.completed {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        
+        .search-box {
+            margin-bottom: 15px;
+        }
+        
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .no-members {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 20px;
+        }
+        
+        .reset-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .modal-close {
+            float: right;
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .modal-btn {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .modal-btn.cancel {
+            background-color: #95a5a6;
+        }
+        
+        .confirm-message {
+            margin: 15px 0;
+        }
+        
+        .manage-members {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .manage-members h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .manage-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .manage-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .manage-btn {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .edit-members-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .edit-member-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .edit-member-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .completed-members {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        
+        .completed-member {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .completed-member-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 600px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .stat-box {
+                margin: 5px 0;
+            }
+            
+            .members {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+            
+            .manage-form {
+                flex-direction: column;
+            }
+            
+            .completed-member {
+                flex-direction: column;
+            }
+            
+            .completed-member-time {
+                margin-top: 5px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>任务完成情况统计</h1>
+    
+    <div class="task-info">
+        <div class="task-title" contenteditable="true">请完成XX任务</div>
+        <div class="task-description" contenteditable="true">请在XX时间前完成XX任务，完成后点击自己的名字标记为已完成</div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>总人数</div>
+                <div id="total-count">56</div>
+            </div>
+            <div class="stat-box completed" id="completed-box">
+                <div>已完成</div>
+                <div id="completed-count">0</div>
+            </div>
+            <div class="stat-box pending" id="pending-box">
+                <div>未完成</div>
+                <div id="pending-count">56</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="member-list">
+        <h2>未完成名单 (<span id="pending-title-count">56</span>人)</h2>
+        
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="搜索姓名...">
+        </div>
+        
+        <div class="members" id="members-container">
+            <!-- 成员列表将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="no-members" id="all-completed" style="display: none;">
+            太棒了！所有人都已完成任务！
+        </div>
+    </div>
+    
+    <button class="reset-btn" id="reset-btn">重置所有状态</button>
+    
+    <!-- 成员管理区域 -->
+    <div class="manage-members">
+        <h2>成员名单管理</h2>
+        <div class="manage-form">
+            <input type="text" id="new-member-input" class="manage-input" placeholder="输入新成员姓名">
+            <button class="manage-btn" id="add-member-btn">添加成员</button>
+        </div>
+        <div class="manage-form">
+            <button class="manage-btn" id="edit-members-btn">删减名单</button>
+        </div>
+    </div>
+    
+    <!-- 确认弹窗 -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <div class="modal-title">确认完成</div>
+            <div class="confirm-message" id="confirm-message">您确定要标记为已完成吗？</div>
+            <div style="text-align: right;">
+                <button class="modal-btn cancel" id="confirm-cancel">取消</button>
+                <button class="modal-btn" id="confirm-ok">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 密码验证弹窗 -->
+    <div class="modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-title">请输入重置密码</div>
+            <input type="password" class="password-input" id="password-input" placeholder="请输入密码">
+            <div style="text-align: right;">
+                <button class="modal-btn cancel" id="password-cancel">取消</button>
+                <button class="modal-btn" id="password-confirm">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删减名单弹窗 -->
+    <div class="modal" id="edit-members-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="edit-members-close">&times;</span>
+            <div class="modal-title">删减名单 (共<span id="edit-members-count">0</span>人)</div>
+            <div class="edit-members-list" id="edit-members-list">
+                <!-- 成员列表将通过JavaScript动态生成 -->
+            </div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="modal-btn cancel" id="edit-members-cancel">取消</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除确认弹窗 -->
+    <div class="modal" id="delete-confirm-modal">
+        <div class="modal-content">
+            <div class="modal-title">删除确认</div>
+            <div class="confirm-message" id="delete-confirm-message">确定要删除该成员吗？</div>
+            <input type="password" class="password-input" id="delete-password-input" placeholder="请输入管理密码">
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="modal-btn cancel" id="delete-cancel">取消</button>
+                <button class="modal-btn" id="delete-confirm">确认删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 已完成人员弹窗 -->
+    <div class="modal" id="completed-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="completed-modal-close">&times;</span>
+            <div class="modal-title">已完成人员名单 (<span id="completed-modal-count">0</span>人)</div>
+            <div class="completed-members" id="completed-members-list">
+                <!-- 已完成人员列表 -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 成员名单 (56人)
+        let allMembers = JSON.parse(localStorage.getItem('allMembers')) || [
+            "唐明星", "李志杰", "喻志强", "李乐宇", "陈仁臻", "周攀", 
+            "陈建树", "陈可翼", "陈孝情", "陈秀玲", "陈艳", "崔玉轩", 
+            "范文政", "高纯健", "高吉龙", "韩镗泷", "贾秉政", "来代军", 
+            "李林龙", "李烨", "李毅", "刘博", "刘盟", "龙鸳鸳", 
+            "卢梅丽", "陆铭雪", "孟庆子", "任博", "任莹莹", "孙香港", 
+            "王畅", "王栋", "王晓丹", "王子实", "吴宝臣", "武银路", 
+            "熊俊杰", "杨永龙", "尹佳俊", "张姣姣", "张杰", "张强强", 
+            "张永伟", "张之诚", "赵婷", "赵文彬", "左鑫", "曾磊", 
+            "宋青峰", "张成", "刘垚坤", "贺淋锋", "高明", "刁焕", 
+            "叶今", "郭金坤"
+        ];
+        
+        // 从本地存储加载已完成成员（带时间戳）
+        let completedMembers = JSON.parse(localStorage.getItem('completedMembers')) || [];
+        
+        // 初始化页面
+        function initPage() {
+            // 渲染成员列表
+            renderMemberList();
+            
+            // 更新统计数字
+            updateStats();
+            
+            // 搜索功能
+            document.getElementById('search-input').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const members = document.querySelectorAll('.member:not(.completed)');
+                
+                members.forEach(member => {
+                    const name = member.textContent.toLowerCase();
+                    if (name.includes(searchTerm)) {
+                        member.style.display = '';
+                    } else {
+                        member.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 已完成按钮点击事件
+            document.getElementById('completed-box').addEventListener('click', showCompletedModal);
+            
+            // 关闭已完成弹窗
+            document.getElementById('completed-modal-close').addEventListener('click', function() {
+                document.getElementById('completed-modal').style.display = 'none';
+            });
+            
+            // 重置按钮
+            document.getElementById('reset-btn').addEventListener('click', showPasswordModal);
+            
+            // 密码弹窗按钮
+            document.getElementById('password-cancel').addEventListener('click', function() {
+                document.getElementById('password-modal').style.display = 'none';
+            });
+            
+            document.getElementById('password-confirm').addEventListener('click', function() {
+                const password = document.getElementById('password-input').value;
+                if (password === '111222') {
+                    resetAllStatus();
+                    document.getElementById('password-modal').style.display = 'none';
+                    document.getElementById('password-input').value = '';
+                } else {
+                    alert('密码错误！');
+                }
+            });
+            
+            // 确认弹窗按钮
+            document.getElementById('confirm-cancel').addEventListener('click', function() {
+                document.getElementById('confirm-modal').style.display = 'none';
+                currentMemberToComplete = null;
+            });
+            
+            document.getElementById('confirm-ok').addEventListener('click', function() {
+                if (currentMemberToComplete) {
+                    completeMember(currentMemberToComplete);
+                }
+                document.getElementById('confirm-modal').style.display = 'none';
+                currentMemberToComplete = null;
+            });
+            
+            // 添加成员按钮
+            document.getElementById('add-member-btn').addEventListener('click', function() {
+                const newMember = document.getElementById('new-member-input').value.trim();
+                if (newMember) {
+                    if (!allMembers.includes(newMember)) {
+                        allMembers.push(newMember);
+                        saveAllMembers();
+                        renderMemberList();
+                        updateStats();
+                        document.getElementById('new-member-input').value = '';
+                        alert(`成功添加成员: ${newMember}`);
+                    } else {
+                        alert('该成员已存在！');
+                    }
+                } else {
+                    alert('请输入成员姓名！');
+                }
+            });
+            
+            // 删减名单按钮
+            document.getElementById('edit-members-btn').addEventListener('click', showEditMembersModal);
+            
+            // 关闭删减名单弹窗
+            document.getElementById('edit-members-close').addEventListener('click', function() {
+                document.getElementById('edit-members-modal').style.display = 'none';
+            });
+            
+            document.getElementById('edit-members-cancel').addEventListener('click', function() {
+                document.getElementById('edit-members-modal').style.display = 'none';
+            });
+            
+            // 删除确认弹窗按钮
+            document.getElementById('delete-cancel').addEventListener('click', function() {
+                document.getElementById('delete-confirm-modal').style.display = 'none';
+                currentMemberToDelete = null;
+            });
+            
+            document.getElementById('delete-confirm').addEventListener('click', function() {
+                const password = document.getElementById('delete-password-input').value;
+                if (password === '111222') {
+                    if (currentMemberToDelete) {
+                        deleteMember(currentMemberToDelete);
+                    }
+                    document.getElementById('delete-confirm-modal').style.display = 'none';
+                    document.getElementById('delete-password-input').value = '';
+                    currentMemberToDelete = null;
+                } else {
+                    alert('密码错误！');
+                }
+            });
+        }
+        
+        // 保存所有成员到本地存储
+        function saveAllMembers() {
+            localStorage.setItem('allMembers', JSON.stringify(allMembers));
+        }
+        
+        // 渲染成员列表
+        function renderMemberList() {
+            const container = document.getElementById('members-container');
+            container.innerHTML = '';
+            
+            // 筛选未完成成员
+            const pendingMembers = allMembers.filter(member => 
+                !completedMembers.some(m => m.name === member));
+            
+            if (pendingMembers.length === 0 && allMembers.length > 0) {
+                document.getElementById('all-completed').style.display = 'block';
+                document.getElementById('members-container').style.display = 'none';
+            } else {
+                document.getElementById('all-completed').style.display = 'none';
+                document.getElementById('members-container').style.display = 'grid';
+                
+                // 按原始顺序显示
+                allMembers.forEach(member => {
+                    if (!completedMembers.some(m => m.name === member)) {
+                        const memberElement = document.createElement('div');
+                        memberElement.className = 'member';
+                        memberElement.textContent = member;
+                        memberElement.addEventListener('click', () => confirmComplete(member));
+                        container.appendChild(memberElement);
+                    }
+                });
+            }
+            
+            // 更新未完成人数标题
+            document.getElementById('pending-title-count').textContent = pendingMembers.length;
+            document.getElementById('total-count').textContent = allMembers.length;
+        }
+        
+        // 显示删减名单弹窗
+        function showEditMembersModal() {
+            const modal = document.getElementById('edit-members-modal');
+            const list = document.getElementById('edit-members-list');
+            const count = document.getElementById('edit-members-count');
+            
+            list.innerHTML = '';
+            count.textContent = allMembers.length;
+            
+            if (allMembers.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #7f8c8d;">暂无成员</div>';
+            } else {
+                allMembers.forEach(member => {
+                    const memberElement = document.createElement('div');
+                    memberElement.className = 'edit-member-item';
+                    memberElement.textContent = member;
+                    memberElement.addEventListener('click', () => confirmDeleteMember(member));
+                    list.appendChild(memberElement);
+                });
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        // 确认删除成员
+        function confirmDeleteMember(member) {
+            currentMemberToDelete = member;
+            document.getElementById('delete-confirm-message').textContent = `确定要删除成员 ${member} 吗？`;
+            document.getElementById('delete-confirm-modal').style.display = 'flex';
+            document.getElementById('edit-members-modal').style.display = 'none';
+        }
+        
+        // 删除成员
+        function deleteMember(member) {
+            const index = allMembers.indexOf(member);
+            if (index > -1) {
+                allMembers.splice(index, 1);
+                // 如果该成员已完成，也从已完成列表中移除
+                completedMembers = completedMembers.filter(m => m.name !== member);
+                localStorage.setItem('completedMembers', JSON.stringify(completedMembers));
+                saveAllMembers();
+                renderMemberList();
+                updateStats();
+                alert(`已删除成员: ${member}`);
+            }
+        }
+        
+        // 确认完成
+        function confirmComplete(member) {
+            currentMemberToComplete = member;
+            document.getElementById('confirm-message').textContent = `确定要将 ${member} 标记为已完成吗？`;
+            document.getElementById('confirm-modal').style.display = 'flex';
+        }
+        
+        // 实际完成成员操作
+        function completeMember(member) {
+            if (!completedMembers.some(m => m.name === member)) {
+                completedMembers.push({
+                    name: member,
+                    time: new Date().toISOString()
+                });
+                localStorage.setItem('completedMembers', JSON.stringify(completedMembers));
+                renderMemberList();
+                updateStats();
+                
+                // 显示完成提示
+                alert(`${member} 已标记为已完成！`);
+            }
+        }
+        
+        // 显示已完成人员弹窗（按时间顺序）
+        function showCompletedModal() {
+            const modal = document.getElementById('completed-modal');
+            const list = document.getElementById('completed-members-list');
+            const count = document.getElementById('completed-modal-count');
+            
+            list.innerHTML = '';
+            count.textContent = completedMembers.length;
+            
+            if (completedMembers.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #7f8c8d;">暂无已完成人员</div>';
+            } else {
+                // 按时间排序
+                const sortedMembers = [...completedMembers].sort((a, b) => 
+                    new Date(a.time) - new Date(b.time));
+                
+                sortedMembers.forEach(member => {
+                    const memberElement = document.createElement('div');
+                    memberElement.className = 'completed-member';
+                    
+                    const nameElement = document.createElement('span');
+                    nameElement.textContent = member.name;
+                    
+                    const timeElement = document.createElement('span');
+                    timeElement.className = 'completed-member-time';
+                    timeElement.textContent = formatTime(member.time);
+                    
+                    memberElement.appendChild(nameElement);
+                    memberElement.appendChild(timeElement);
+                    list.appendChild(memberElement);
+                });
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        // 格式化时间显示
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return `${date.getFullYear()}-${padZero(date.getMonth()+1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
+        }
+        
+        // 补零函数
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+        
+        // 更新统计数据
+        function updateStats() {
+            const total = allMembers.length;
+            const completed = completedMembers.length;
+            const pending = total - completed;
+            
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('completed-count').textContent = completed;
+            document.getElementById('pending-count').textContent = pending;
+        }
+        
+        // 显示密码弹窗
+        function showPasswordModal() {
+            document.getElementById('password-modal').style.display = 'flex';
+        }
+        
+        // 重置所有状态
+        function resetAllStatus() {
+            completedMembers = [];
+            localStorage.setItem('completedMembers', JSON.stringify(completedMembers));
+            renderMemberList();
+            updateStats();
+            alert('所有状态已重置！');
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
